@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Donor Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .background-image {
+            background-image: url('https://images.unsplash.com/photo-1542884841-9f546e727bca?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover;
+            opacity: 0.4;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .content {
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+    </style>
+    <script>
+function fetchTimeSlots() {
+    const date = document.getElementById('appointment_date').value;
+    if (date) {
+        fetch('/get_time_slots', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `appointment_date=${date}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            const timeSelect = document.getElementById('scheduled_time');
+            timeSelect.innerHTML = ''; // Clear previous options
+            data.time_slots.forEach(time => {
+                const option = document.createElement('option');
+                option.value = time;
+                option.textContent = time;
+                timeSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching time slots:', error));
+    }
+}
+    </script>
+</head>
+<body class="bg-gray-100">
+
+<div class="background-image"></div>
+
+<div class="min-h-screen flex flex-col items-center justify-center">
+    <div class="content p-5 rounded-lg shadow-lg relative z-10 bg-white max-w-2xl w-full">
+        <!-- Navigation -->
+        <nav class="flex justify-around py-4 border-b-2 mb-4">
+            <a href="{{url_for('donor_home')}}" class="text-blue-600 hover:text-blue-800 font-semibold">Donor Home</a>
+            <a href="{{url_for('logout')}}" class="text-red-600 hover:text-red-800 font-semibold">Logout</a>
+        </nav>
+
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    <strong>{{ messages[0] }}</strong>
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Book Appointment Form (only if no pending appointment) -->
+        {% if not pending_appointment %}
+            <h2 class="text-2xl font-bold mb-4">Book an Appointment</h2>
+            <form action="{{ url_for('book_appointment') }}" method="POST" class="mb-8">
+                <div class="mb-4">
+                    <label for="appointment_type" class="block text-gray-700">Appointment Type</label>
+                    <select name="appointment_type" id="appointment_type" class="border rounded w-full py-2 px-3">
+                        <option value="Walk-in">Walk-in</option>
+                        <option value="At Home">At Home</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="appointment_date" class="block text-gray-700">Appointment Date</label>
+                    <input type="date" name="appointment_date" id="appointment_date" class="border rounded w-full py-2 px-3" required onchange="fetchTimeSlots()">
+                </div>
+                <div class="mb-4">
+                    <label for="scheduled_time" class="block text-gray-700">Scheduled Time</label>
+                    <select name="scheduled_time" id="scheduled_time" class="border rounded w-full py-2 px-3" required>
+                        <!-- Time slots will be populated dynamically based on selected date -->
+                    </select>
+                </div>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800">Book Appointment</button>
+            </form>
+        {% endif %}
+
+        <!-- Manage Appointments Section -->
+        <div class="mt-4">
+            <h2 class="text-2xl font-bold mb-4">My Appointments</h2>
+            <table class="table-auto w-full mb-4 shadow">
+                <thead class="bg-gray-300 text-black">
+                    <tr>
+                        <th class="px-4 py-2">Appointment Type</th>
+                        <th class="px-4 py-2">Date</th>
+                        <th class="px-4 py-2">Time</th>
+                        <th class="px-4 py-2">Status</th>
+                        <th class="px-4 py-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if appointments %}
+                        {% for appointment in appointments %}
+                        <tr>
+                            <td class="border px-4 py-2">{{ appointment.appointment_type }}</td>
+                            <td class="border px-4 py-2">{{ appointment.appointment_date }}</td>
+                            <td class="border px-4 py-2">{{ appointment.scheduled_time }}</td>
+                            <td class="border px-4 py-2">{{ appointment.status }}</td>
+                            <td class="border px-4 py-2">
+                                {% if appointment.status == "Pending" %}
+                                    <form action="{{ url_for('delete_appointment', appointment_id=appointment._id) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="text-red-600 hover:text-red-800">Delete</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">No appointments found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

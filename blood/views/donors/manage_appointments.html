@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Details</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1628891890467-b79f2c8ba9dc?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.6;
+            z-index: -1;
+        }
+        .container-bg {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8 font-sans">
+    <div class="container-bg">
+        <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow divide-y divide-gray-200">
+            <!-- Team Details Section -->
+            <div class="pb-6">
+                <h2 class="text-2xl font-bold mb-4">Team Details</h2>
+                <p><strong>Team Name:</strong> {{ team['team_name'] }}</p>
+                <p><strong>Coach Name:</strong> {{ team['coach_name'] }}</p>
+                <p><strong>Address:</strong> {{ team['address'] or 'Not Provided' }}</p>
+            </div>
+
+            <!-- Recipients Details Section -->
+            <div class="pt-">
+                <h3 class="text-xl font-semibold mb-4">Recipients</h3>
+                {% if recipient_details %}
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-200">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Name</th>
+                            <th class="px-4 py-2 text-left">Email</th>
+                            <th class="px-4 py-2 text-left">DOB</th>
+                            <th class="px-4 py-2 text-left">Position</th>
+                            <th class="px-4 py-2 text-left">Phone</th>
+                            <th class="px-4 py-2 text-left">Address</th>
+                            <th class="px-4 py-2 text-left">Role</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for recipient in recipient_details %}
+                        <tr>
+                            <td class="px-4 py-2">{{ recipient['first_name'] }} {{ recipient['last_name'] }}</td>
+                            <td class="px-4 py-2">{{ recipient['email'] }}</td>
+                            <td class="px-4 py-2">{{ recipient['dob'] }}</td>
+                            <td class="px-4 py-2">{{ recipient['position'] or 'Not Provided' }}</td>
+                            <td class="px-4 py-2">{{ recipient['phone_number'] }}</td>
+                            <td class="px-4 py-2">{{ recipient['address'] or 'Not Provided' }}</td>
+                            
+                            <td class="px-4 py-2">
+                                <form action="{{ url_for('update_recipient_role') }}" method="post" onchange="this.submit()">
+                                    <input type="hidden" name="recipient_id" value="{{ recipient['_id'] }}">
+                                    <input type="hidden" name="team_id" value="{{ team['_id'] }}">
+                                <select name="role" id="role" class="border border-gray-300 rounded-md">
+                                    <option value="none" {% if recipient['role'] == 'none' %} selected {% endif %}>Select Role</option>
+                                    <option value="captain" {% if recipient['role'] == 'captain' %} selected {% endif %}>Captain</option>
+                                    <option value="goalkeeper" {% if recipient['role'] == 'goalkeeper' %} selected {% endif %}>Goalkeeper</option>
+                                    <option value="defender" {% if recipient['role'] == 'defender' %} selected {% endif %}>Defender</option>
+                                    <option value="midfielder" {% if recipient['role'] == 'midfielder' %} selected {% endif %}>Midfielder</option>
+                                    <option value="forward" {% if recipient['role'] == 'forward' %} selected {% endif %}>Forward</option>
+                                    <option value="standby" {% if recipient['role'] == 'standby' %} selected {% endif %}>Standby</option>
+                                </select>
+                            </form>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No recipients added yet.</p>
+                {% endif %}
+            </div>
+            <br>
+            <a href="{{url_for('donor_home')}}" class="text-blue-600 hover:text-blue-800 font-semibold">Home</a>
+        </div>
+    </div>
+</body>
+</html>

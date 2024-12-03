@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donor Management</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1615461066159-fea0960485d5?q=80&w=2816&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover;
+            opacity: 0.5;
+            z-index: -1;
+        }
+        .content {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mx-auto p-4 min-h-screen">
+    <div class="content p-5 rounded-lg shadow-lg relative z-10">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold">Donor Management</h2>
+        </div>
+
+        <table class="table-auto w-full mb-4">
+            <thead>
+                <tr class="bg-gray-200 text-left">
+                    <th class="px-4 py-2">Name</th>
+                    <th class="px-4 py-2">Email</th>
+                    <th class="px-4 py-2">Phone</th>
+                    <th class="px-4 py-2">Address</th>
+                    <th class="px-4 py-2">Blood Type</th>
+                    <th class="px-4 py-2">Eligible to Donate</th>
+                    <th class="px-4 py-2">Status</th>
+                    <th class="px-4 py-2">Last Donation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for donor in donors %}
+                <tr class="text-left">
+                    <td class="border px-4 py-2">{{ donor.name }}</td>
+                    <td class="border px-4 py-2">{{ donor.email }}</td>
+                    <td class="border px-4 py-2">{{ donor.phone }}</td>
+                    <td class="border px-4 py-2">{{ donor.address }}</td>
+                    <td class="border px-4 py-2">{{ donor.blood_type }}</td>
+                    <td class="border px-4 py-2">
+                        {% if donor.eligible_to_donate %}
+                        <span class="text-green-600">Yes</span>
+                        {% else %}
+                        <span class="text-red-600">No</span>
+                        {% endif %}
+                    </td>
+                    <td class="border px-4 py-2">
+                        {% if donor.status == 'Pending' %}
+                        <span class="text-yellow-600">{{ donor.status }}</span>
+                        {% elif donor.status == 'Active' %}
+                        <span class="text-green-600">{{ donor.status }}</span>
+                        {% elif donor.status == 'Rejected' %}
+                        <span class="text-red-600">{{ donor.status }}</span>
+                        {% else %}
+                        <span>{{ donor.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="border px-4 py-2">
+                        <input type="date" 
+                               onchange="updateDonationDate(this, '{{ donor._id }}')" 
+                               class="border rounded p-1"
+                               {% if not donor.eligible_to_donate %}disabled{% endif %}>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{url_for('admin_home')}}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Back to Dashboard</a>
+    </div>
+</div>
+
+<script>
+    function updateDonationDate(dateInput, donorId) {
+        const donationDate = dateInput.value;
+        if (!donationDate) {
+            alert('Please select a date');
+            return;
+        }
+
+        fetch('/update-donor-date', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ donorId: donorId, date: donationDate })
+        })
+        .then(response => {
+            if (!response.ok) {
+                alert('Error updating donation date');
+            } else {
+                alert('Donation date updated successfully');
+                location.reload();  // Reload to reflect changes
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+
+</body>
+</html>

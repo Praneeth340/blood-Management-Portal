@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Request Details</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1615461066159-fea0960485d5?q=80&w=2816&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover;
+            opacity: 0.5;
+            z-index: -1;
+        }
+        .content {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+    <script>
+        // Fetch available quantity for selected blood type
+        function fetchAvailableQuantity() {
+            const bloodType = document.getElementById("available_blood_type").value;
+            fetch(`/get_available_quantity?blood_type=${bloodType}`)
+                .then(response => response.json())
+                .then(data => {
+                    const quantitySelect = document.getElementById("assign_quantity");
+                    quantitySelect.innerHTML = ''; // Clear previous options
+
+                    for (let i = 1; i <= data.available_quantity; i++) {
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = `${i} Unit(s)`;
+                        quantitySelect.appendChild(option);
+                    }
+                })
+                .catch(error => console.error('Error fetching quantity:', error));
+        }
+    </script>
+</head>
+<body>
+
+<div class="container mx-auto p-4 min-h-screen">
+    <div class="content p-5 rounded-lg shadow-lg relative z-10">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold">Blood Request Details</h2>
+        </div>
+
+        <!-- Blood Request Details Table -->
+        <table class="table-auto w-full mb-4">
+            <tbody>
+                <tr>
+                    <td class="px-4 py-2 font-semibold">Blood Type:</td>
+                    <td class="border px-4 py-2">{{ blood_request.blood_type }}</td>
+                </tr>
+                <tr>
+                    <td class="px-4 py-2 font-semibold">Quantity:</td>
+                    <td class="border px-4 py-2">{{ blood_request.quantity }} Unit(s)</td>
+                </tr>
+                <tr>
+                    <td class="px-4 py-2 font-semibold">Requested On:</td>
+                    <td class="border px-4 py-2">{{ blood_request.requested_on }}</td>
+                </tr>
+                <tr>
+                    <td class="px-4 py-2 font-semibold">Scheduled Pickup Date:</td>
+                    <td class="border px-4 py-2">{{ blood_request.scheduled_pickup_date }}</td>
+                </tr>
+                <tr>
+                    <td class="px-4 py-2 font-semibold">Scheduled Pickup Time:</td>
+                    <td class="border px-4 py-2">{{ blood_request.scheduled_pickup_time }}</td>
+                </tr>
+                <tr>
+                    <td class="px-4 py-2 font-semibold">Status:</td>
+                    <td class="border px-4 py-2">{{ blood_request.status }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Back to Dashboard Button -->
+        <a href="{{ url_for('admin_home') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mb-8 inline-block">Back to Dashboard</a>
+
+        <!-- Section to Assign Available Blood -->
+        <!-- Section to Assign Available Blood, only shown if status is not Completed -->
+        {% if blood_request.status != 'Completed' %}
+        <div class="mt-8">
+            <h3 class="text-xl font-semibold mb-4">Assign Available Blood</h3>
+            <form action="{{ url_for('assign_blood', request_id=blood_request._id) }}" method="POST">
+                <div class="mb-4">
+                    <label for="available_blood_type" class="block text-gray-700">Select Blood Type</label>
+                    <select name="blood_type" id="available_blood_type" class="border rounded w-full py-2 px-3" onchange="fetchAvailableQuantity()" required>
+                        <option value="" disabled selected>Select Blood Type</option>
+                        {% for blood_type in available_blood_types %}
+                            <option value="{{ blood_type }}">{{ blood_type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="assign_quantity" class="block text-gray-700">Assign Quantity (Units)</label>
+                    <select name="quantity" id="assign_quantity" class="border rounded w-full py-2 px-3" required>
+                        <!-- Quantity options will be populated based on selected blood type -->
+                    </select>
+                </div>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800">Assign Blood</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<script>
+    // Fetch available quantity for selected blood type
+    function fetchAvailableQuantity() {
+    const bloodType = document.getElementById("available_blood_type").value;
+    fetch(`/get_available_quantity?blood_type=${encodeURIComponent(bloodType)}`)
+        .then(response => response.json())
+        .then(data => {
+            const quantitySelect = document.getElementById("assign_quantity");
+            quantitySelect.innerHTML = ''; // Clear previous options
+            
+            if (data.available_quantity > 0) {
+                for (let i = 1; i <= data.available_quantity; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `${i} Unit(s)`;
+                    quantitySelect.appendChild(option);
+                }
+            } else {
+                const option = document.createElement('option');
+                option.value = "";
+                option.textContent = "No units available";
+                quantitySelect.appendChild(option);
+            }
+        })
+        .catch(error => console.error('Error fetching quantity:', error));
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Donation Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Header -->
+    <header class="bg-red-700 text-white py-6 px-4 flex justify-between items-center">
+        <h1 class="text-3xl font-bold">Blood Donation Portal</h1>
+        <nav class="space-x-4">
+            <a href="{{ url_for('signin') }}" class="bg-white text-red-700 py-2 px-4 rounded-lg hover:bg-gray-200">Sign In</a>
+            <a href="{{ url_for('signup_donor') }}" class="bg-white text-red-700 py-2 px-4 rounded-lg hover:bg-gray-200">Sign Up as Donor</a>
+            <a href="{{ url_for('signup_recipient') }}" class="bg-white text-red-700 py-2 px-4 rounded-lg hover:bg-gray-200">Sign Up as Recipient</a>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container mx-auto my-8 px-4">
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+            <h2 class="text-2xl font-semibold mb-4">Welcome to Our Blood Donation Portal</h2>
+            <p class="text-gray-700 mb-4">Save lives by donating blood! Help patients in need and be a part of a community that makes a difference.</p>
+        </div>
+
+        <!-- Save Lives Section -->
+        <div class="bg-red-500 text-white mt-8 p-8 rounded-lg shadow-lg text-center">
+            <h3 class="text-3xl font-semibold mb-4">Save Lives, Donate Blood</h3>
+            <p class="mb-6">Your blood donation can save up to three lives. Register today to become a donor and make a life-changing impact!</p>
+            <button class="bg-white text-red-600 py-3 px-6 rounded-lg text-lg hover:bg-gray-200 transition" onclick="window.location.href=`{{ url_for('signup_donor') }}`">Become a Donor</button>
+        </div>
+
+        <!-- Testimonials Section -->
+        <div class="mt-12">
+            <h3 class="text-2xl font-semibold text-center mb-8">Donor Testimonials</h3>
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Testimonial Card 1 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg flex items-center">
+                    <p class="text-gray-700">"Donating blood was one of the most rewarding experiences. I know I'm making a real difference in someone's life." - Alex T.</p>
+                </div>
+                <!-- Testimonial Card 2 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg flex items-center">
+                    <p class="text-gray-700">"It's great to be part of a community that supports each other in such a meaningful way." - Jordan S.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="mt-12">
+            <h3 class="text-2xl font-semibold text-center mb-8">Frequently Asked Questions</h3>
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- FAQ Card 1 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <p class="font-semibold text-lg text-gray-800 mb-2">Who can donate blood?</p>
+                    <p class="text-gray-700">Anyone who is healthy and meets the donor eligibility criteria can donate blood. You can check the eligibility requirements on our website.</p>
+                </div>
+                <!-- FAQ Card 2 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <p class="font-semibold text-lg text-gray-800 mb-2">How often can I donate blood?</p>
+                    <p class="text-gray-700">You can donate blood every 56 days. Platelets can be donated every 7 days.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-red-700 text-white py-4 text-center">
+        <p>Saving lives, one donation at a time. Stay connected and spread the word!</p>
+    </footer>
+
+</body>
+</html>

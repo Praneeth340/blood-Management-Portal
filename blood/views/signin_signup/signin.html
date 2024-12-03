@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login -  Blood Portal</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1615461066159-fea0960485d5?q=80&w=2816&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover; /* Makes sure the background image covers the entire screen */
+            color: #333; /* Sets a default text color for contrast against the background */
+            
+        }
+        .container {
+            margin-top: 50px;
+            width: 400px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Adding a shadow for better aesthetics */
+            background: rgba(255, 255, 255, 0.9); /* White background with slight transparency */
+        }
+        h2 {
+            color: #004d40; /* Darker green for the title */
+        }
+        .btn-primary {
+            background-color: #007200; /* Custom green for buttons */
+            border-color: #005600; /* Darker green for button borders */
+        }
+        .btn-primary:hover {
+            background-color: #005600; /* Darker green on hover for a nice effect */
+            border-color: #003d40;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container bg-white p-4 rounded">
+    <h2>Login</h2>
+    <form action="{{ url_for('signin') }}" method="POST">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+        <a href="{{ url_for('home') }}" class="btn btn-primary">Home</a>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
